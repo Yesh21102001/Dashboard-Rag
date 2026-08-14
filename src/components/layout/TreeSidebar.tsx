@@ -10,7 +10,7 @@ export default function TreeSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-12 h-[calc(100vh-48px)] flex flex-col z-40 bg-surface-container border-r border-outline-variant w-sidebar-width transition-all duration-200 ease-in-out">
+    <aside className="fixed left-0 top-12 h-[calc(100vh-48px)] flex-col z-40 bg-surface-container border-r border-outline-variant w-sidebar-width transition-all duration-200 ease-in-out">
       <div className="p-md border-b border-outline-variant flex items-center gap-3">
         <div className="w-8 h-8 rounded-DEFAULT bg-primary text-on-primary flex items-center justify-center font-bold">
           W

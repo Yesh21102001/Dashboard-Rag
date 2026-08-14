@@ -2,9 +2,10 @@ import Icon from "@/components/ui/Icon";
 
 interface ToolbarProps {
   epicLabel: string;
+  onNewStory?: () => void;
 }
 
-export default function Toolbar({ epicLabel }: ToolbarProps) {
+export default function Toolbar({ epicLabel, onNewStory }: ToolbarProps) {
   return (
     <div className="h-12 border-b border-outline-variant bg-surface-container-lowest flex items-center justify-between px-md shrink-0">
       <div className="flex items-center gap-sm">
@@ -22,7 +23,7 @@ export default function Toolbar({ epicLabel }: ToolbarProps) {
           <Icon name="view_column" className="text-[16px]" />
           Columns
         </button>
-        <button className="px-3 py-1 rounded-DEFAULT bg-primary-container text-on-primary font-body-sm text-body-sm hover:bg-primary transition-colors flex items-center gap-1">
+        <button onClick={() => onNewStory && onNewStory()} className="px-3 py-1 rounded-DEFAULT bg-primary-container text-on-primary font-body-sm text-body-sm hover:bg-primary transition-colors flex items-center gap-1">
           <Icon name="add" className="text-[16px]" />
           New Story
         </button>
