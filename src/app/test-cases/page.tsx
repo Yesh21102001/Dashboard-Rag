@@ -35,7 +35,7 @@ export default function TestCasesPage() {
   return (
     <AppShell>
       <PageToolbar workspaceLabel="Payment Gateway RAG" onNewTestCase={() => setModalOpen(true)} />
-      <TestCasesWorkspace epics={epics} initialSelectedId={selectedId} />
+      <TestCasesWorkspace epics={epics} selectedId={selectedId} onSelectId={setSelectedId} />
       <NewTestCaseModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}

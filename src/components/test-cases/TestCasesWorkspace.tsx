@@ -22,14 +22,15 @@ function findTestCase(epics: EpicTreeNode[], id: string): TestCaseNode | undefin
 
 interface TestCasesWorkspaceProps {
   epics: EpicTreeNode[];
-  initialSelectedId: string;
+  selectedId: string;
+  onSelectId: (id: string) => void;
 }
 
 export default function TestCasesWorkspace({
   epics,
-  initialSelectedId,
+  selectedId,
+  onSelectId,
 }: TestCasesWorkspaceProps) {
-  const [selectedId, setSelectedId] = useState(initialSelectedId);
   const selected = findTestCase(epics, selectedId);
 
   return (
@@ -37,7 +38,7 @@ export default function TestCasesWorkspace({
       {/* Left Pane: Tree View */}
       <div className="w-72 flex flex-col bg-surface-container-lowest border-r border-outline-variant shrink-0">
         <TreeFilterBar />
-        <TestTree epics={epics} selectedTestCaseId={selectedId} onSelectTestCase={setSelectedId} />
+        <TestTree epics={epics} selectedTestCaseId={selectedId} onSelectTestCase={onSelectId} />
       </div>
 
       {/* Resizer */}

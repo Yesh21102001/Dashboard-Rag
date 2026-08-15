@@ -10,6 +10,9 @@ export interface FileItem {
   progress: number; // 0-100
   lastAiScan: string;
   active?: boolean;
+  content?: string;
+  fileUrl?: string;
+  file?: File;
 }
 
 export interface TreeFile {

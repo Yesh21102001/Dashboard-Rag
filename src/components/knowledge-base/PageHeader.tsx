@@ -1,6 +1,10 @@
 import ConnectSourceButton from "./ConnectSourceButton";
 
-export default function PageHeader() {
+interface PageHeaderProps {
+  onConnectClick: () => void;
+}
+
+export default function PageHeader({ onConnectClick }: PageHeaderProps) {
   return (
     <div className="bg-surface-container-lowest px-lg py-md flex justify-between items-center border-b border-outline-variant">
       <div>
@@ -11,7 +15,7 @@ export default function PageHeader() {
           Manage and sync RAG context sources.
         </p>
       </div>
-      <ConnectSourceButton />
+      <ConnectSourceButton onClick={onConnectClick} />
     </div>
   );
 }

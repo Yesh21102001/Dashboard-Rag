@@ -19,12 +19,6 @@ export const connectedFolders: TreeFolder[] = [
   {
     id: "srs-brs",
     name: "SRS / BRS Documents",
-    icon: "folder",
-    iconColorClass: "text-tertiary-fixed-dim",
-  },
-  {
-    id: "brms",
-    name: "BRMs",
     icon: "folder_open",
     iconColorClass: "text-tertiary-fixed-dim",
     expanded: true,
@@ -32,6 +26,12 @@ export const connectedFolders: TreeFolder[] = [
       { id: "q1-features", name: "Q1_Features.pdf" },
       { id: "core-logic-v2", name: "Core_Logic_v2.docx", active: true },
     ],
+  },
+  {
+    id: "brms",
+    name: "BRMs",
+    icon: "folder",
+    iconColorClass: "text-tertiary-fixed-dim",
   },
   {
     id: "figma-exports",
@@ -81,6 +81,7 @@ export const brmsFiles: FileItem[] = [
     syncStatus: "SYNCED",
     progress: 100,
     lastAiScan: "10 mins ago",
+    content: "Q1 Features Document\n\n1. User Authentication\n2. Dashboard Overview\n3. Data Analytics\n4. Report Generation\n5. User Management",
   },
   {
     id: "core-logic-v2",
@@ -92,5 +93,6 @@ export const brmsFiles: FileItem[] = [
     progress: 75,
     lastAiScan: "In Progress",
     active: true,
+    content: "Core Logic v2 Document\n\nSystem Architecture:\n- Frontend: React/Next.js\n- Backend: Node.js\n- Database: PostgreSQL\n\nKey Components:\n- User Service\n- Auth Module\n- Data Processing Pipeline\n- Report Generator",
   },
 ];

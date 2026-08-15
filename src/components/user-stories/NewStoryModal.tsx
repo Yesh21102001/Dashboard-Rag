@@ -128,7 +128,7 @@ export default function NewStoryModal({ open, onClose, onCreate }: NewStoryModal
           </label>
 
           <label className="flex flex-col gap-1 md:col-span-2">
-            <span className="font-label-caps text-label-caps text-on-surface-variant">Action Acceptance Criteria</span>
+            <span className="font-label-caps text-label-caps text-on-surface-variant">Acceptance Criteria</span>
             <input
               value={actionAcceptanceCriteria}
               onChange={(e) => setActionAcceptanceCriteria(e.target.value)}
