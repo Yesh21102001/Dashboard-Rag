@@ -13,13 +13,11 @@ export default function NewStoryModal({ open, onClose, onCreate }: NewStoryModal
   const [code, setCode] = useState("");
   const [status, setStatus] = useState("Ready for Review");
   const [preFlow, setPreFlow] = useState("");
-  const [given, setGiven] = useState("");
-  const [whenVal, setWhenVal] = useState("");
-  const [thenVal, setThenVal] = useState("");
   const [scopeIn, setScopeIn] = useState("");
   const [scopeOut, setScopeOut] = useState("");
   const [reqMapping, setReqMapping] = useState("");
   const [assignee, setAssignee] = useState("");
+  const [actionAcceptanceCriteria, setActionAcceptanceCriteria] = useState("");
 
   if (!open) return null;
 
@@ -32,11 +30,11 @@ export default function NewStoryModal({ open, onClose, onCreate }: NewStoryModal
       title: title || "Untitled Story",
       status,
       preFlow,
-      acceptanceCriteria: { given, when: whenVal, then: thenVal },
       scopeIn,
       scopeOut,
       reqMapping: reqMapping.split(",").map((s) => s.trim()).filter(Boolean),
       assignee: assignee ? { name: assignee } : null,
+      actionAcceptanceCriteria,
       syncedWith: null,
     };
 
@@ -46,13 +44,11 @@ export default function NewStoryModal({ open, onClose, onCreate }: NewStoryModal
     setCode("");
     setStatus("Ready for Review");
     setPreFlow("");
-    setGiven("");
-    setWhenVal("");
-    setThenVal("");
     setScopeIn("");
     setScopeOut("");
     setReqMapping("");
     setAssignee("");
+    setActionAcceptanceCriteria("");
     onClose();
   };
 
@@ -105,33 +101,6 @@ export default function NewStoryModal({ open, onClose, onCreate }: NewStoryModal
           </label>
 
           <label className="flex flex-col gap-1">
-            <span className="font-label-caps text-label-caps text-on-surface-variant">Given</span>
-            <input
-              value={given}
-              onChange={(e) => setGiven(e.target.value)}
-              className="rounded-md border border-outline-variant bg-surface-container px-3 py-2 text-body-sm text-on-surface outline-none focus:border-primary"
-            />
-          </label>
-
-          <label className="flex flex-col gap-1">
-            <span className="font-label-caps text-label-caps text-on-surface-variant">When</span>
-            <input
-              value={whenVal}
-              onChange={(e) => setWhenVal(e.target.value)}
-              className="rounded-md border border-outline-variant bg-surface-container px-3 py-2 text-body-sm text-on-surface outline-none focus:border-primary"
-            />
-          </label>
-
-          <label className="flex flex-col gap-1 md:col-span-2">
-            <span className="font-label-caps text-label-caps text-on-surface-variant">Then</span>
-            <input
-              value={thenVal}
-              onChange={(e) => setThenVal(e.target.value)}
-              className="rounded-md border border-outline-variant bg-surface-container px-3 py-2 text-body-sm text-on-surface outline-none focus:border-primary"
-            />
-          </label>
-
-          <label className="flex flex-col gap-1">
             <span className="font-label-caps text-label-caps text-on-surface-variant">Scope In</span>
             <input
               value={scopeIn}
@@ -154,6 +123,15 @@ export default function NewStoryModal({ open, onClose, onCreate }: NewStoryModal
             <input
               value={reqMapping}
               onChange={(e) => setReqMapping(e.target.value)}
+              className="rounded-md border border-outline-variant bg-surface-container px-3 py-2 text-body-sm text-on-surface outline-none focus:border-primary"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 md:col-span-2">
+            <span className="font-label-caps text-label-caps text-on-surface-variant">Action Acceptance Criteria</span>
+            <input
+              value={actionAcceptanceCriteria}
+              onChange={(e) => setActionAcceptanceCriteria(e.target.value)}
               className="rounded-md border border-outline-variant bg-surface-container px-3 py-2 text-body-sm text-on-surface outline-none focus:border-primary"
             />
           </label>

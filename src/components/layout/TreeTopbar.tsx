@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 
 export default function TreeTopbar() {
@@ -38,7 +39,7 @@ export default function TreeTopbar() {
 
         <div className="flex items-center gap-sm">
           <span className="font-label-caps text-label-caps text-secondary">RAG Sync Active</span>
-          <div className="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center overflow-hidden shrink-0">
+          <Link href="/profile" className="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center overflow-hidden shrink-0 transition-transform hover:scale-[1.02]">
             <Image
               alt="User Profile"
               className="w-full h-full object-cover"
@@ -46,7 +47,7 @@ export default function TreeTopbar() {
               height={24}
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxm9W9hcn5w7yJUg7BG4XR_ReURY6RzEmAA489aSDY9M06PYo5rRxZ3sWOKOdoxmSV4YPdJMJRK57RkcHfqzuuoNG17hXPOmj8EAwFdFu9fv5EZ6Wbh6BcP5H1WhkDYmw5Lbq05jqc4oB63x0j9zDQBKgZNUsitruHt7xQ_CHRihoEIRzSTxWL2VjG_X25anLsLGBXY5Z0F04MDFQSwVY8SEpbcnGJivZq1LpbkRSsc0wZFWqMwfbW"
             />
-          </div>
+          </Link>
         </div>
       </div>
     </nav>

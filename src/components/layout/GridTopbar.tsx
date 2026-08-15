@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 
 export default function GridTopbar() {
@@ -39,7 +40,7 @@ export default function GridTopbar() {
           RAG Sync Active
         </span>
 
-        <div className="w-7 h-7 rounded-full bg-surface-variant ml-sm flex items-center justify-center border border-outline-variant overflow-hidden cursor-pointer">
+        <Link href="/profile" className="w-7 h-7 rounded-full bg-surface-variant ml-sm flex items-center justify-center border border-outline-variant overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]">
           <Image
             alt="User Profile"
             className="w-full h-full object-cover"
@@ -47,7 +48,7 @@ export default function GridTopbar() {
             height={28}
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKlTtlJVoS2Hy8BSWUm4tF4aUbbe7DIrLAJpVPr0TX80mFIKAeVN0SFRT7Etk-ZAPGZW0OC4Jtc9POULA2dS68IAhWb0nd27gSx3HmeQNT-cKcGWWo-pz1bWYmNRZ-3IyRB9FfMgforDUw7D89K5xY03NUzu35wZZNEUrTjU3S5hCMOW-SSB6Q3FvZdEAYmyY5ESGMdeuRF4ZPNtaXQD2ZCEMJlgzzoJ1cihfxGT-khY4_SSML_dNg"
           />
-        </div>
+        </Link>
       </div>
     </header>
   );

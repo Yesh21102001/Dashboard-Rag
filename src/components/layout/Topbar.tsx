@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import SearchBar from "./SearchBar";
 
@@ -30,7 +31,7 @@ export default function Topbar() {
         </button>
 
         {/* Profile */}
-        <div className="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center ml-sm overflow-hidden border border-outline-variant">
+        <Link href="/profile" className="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center ml-sm overflow-hidden border border-outline-variant transition-transform hover:scale-[1.02]">
           <Image
             alt="User Profile"
             className="w-full h-full object-cover"
@@ -38,7 +39,7 @@ export default function Topbar() {
             height={32}
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBObsEjTkdZAySe9YrWS-0bGvWqa6W4RypDLza9P4P16LgG3l5W0cgFXDZPEaBy-0-DD_3f8UeBZpuMj14wHWtL934qtiUyDZAl1OVQffjJp6FgVLkd8i-t1jEeorNwrIWMKfhDzwuK4Ejko3ISaZ-Om-9r_fWWDytjsuZZ5y5L0GKOnvC54fB_7m-ZljVN8_8XGOI5BbP-DhSsbCrGX7XD8o_ppHAjrXSZJFb4R4a9EV-CcKMDayqr"
           />
-        </div>
+        </Link>
       </div>
     </header>
   );
