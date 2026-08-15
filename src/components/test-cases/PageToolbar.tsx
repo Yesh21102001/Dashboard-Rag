@@ -2,9 +2,10 @@ import Icon from "@/components/ui/Icon";
 
 interface PageToolbarProps {
   workspaceLabel: string;
+  onNewTestCase?: () => void;
 }
 
-export default function PageToolbar({ workspaceLabel }: PageToolbarProps) {
+export default function PageToolbar({ workspaceLabel, onNewTestCase }: PageToolbarProps) {
   return (
     <header className="bg-surface-container-lowest border-b border-outline-variant h-12 flex items-center justify-between px-md shrink-0">
       <div className="flex items-center gap-2">
@@ -19,7 +20,11 @@ export default function PageToolbar({ workspaceLabel }: PageToolbarProps) {
         <button className="px-3 py-1.5 border border-outline-variant rounded-DEFAULT text-body-sm font-title-sm hover:bg-surface-variant transition-colors bg-surface-container-lowest text-on-surface flex items-center gap-2">
           <Icon name="download" className="text-sm" /> Export
         </button>
-        <button className="px-3 py-1.5 bg-primary-container text-on-primary border border-transparent rounded-DEFAULT text-body-sm font-title-sm hover:bg-opacity-90 transition-colors flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onNewTestCase && onNewTestCase()}
+          className="px-3 py-1.5 bg-primary-container text-on-primary border border-transparent rounded-DEFAULT text-body-sm font-title-sm hover:bg-opacity-90 transition-colors flex items-center gap-2"
+        >
           <Icon name="add" className="text-sm" /> New Test Case
         </button>
       </div>

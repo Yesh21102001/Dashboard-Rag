@@ -2,7 +2,7 @@ import Icon from "@/components/ui/Icon";
 
 export default function GridHeaderRow() {
   return (
-      <div className="sticky top-12 z-20 border-b border-outline-variant flex font-label-caps text-label-caps text-on-surface-variant h-8 items-center bg-surface-container-low shadow-sm">
+      <div className="sticky top-0 z-20 border-b border-outline-variant flex font-label-caps text-label-caps text-on-surface-variant h-8 items-center bg-surface-container-low shadow-sm">
       <div className="w-10 px-2 flex items-center justify-center border-r border-outline-variant h-full">
         <Icon name="expand_all" className="text-[16px]" />
       </div>
