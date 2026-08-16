@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { EpicRowData } from "@/types";
+import { EpicRowData, UserStoryRowData } from "@/types";
 import EpicRow from "./EpicRow";
 import FeatureRow from "./FeatureRow";
 import UserStoryRow from "./UserStoryRow";
@@ -10,10 +10,11 @@ interface StoriesGridProps {
   epics: EpicRowData[];
 }
 
-export default function StoriesGrid({ epics }: StoriesGridProps) {
+export default function StoriesGrid({ epics: initialEpics }: StoriesGridProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(
-    new Set(epics.flatMap((e) => [e.id, ...e.features.map((f) => f.id)]))
+    new Set(initialEpics.flatMap((e) => [e.id, ...e.features.map((f) => f.id)]))
   );
+  const [epics, setEpics] = useState<EpicRowData[]>(initialEpics);
 
   const toggle = (id: string) => {
     setExpandedIds((prev) => {
@@ -25,6 +26,32 @@ export default function StoriesGrid({ epics }: StoriesGridProps) {
       }
       return next;
     });
+  };
+
+  const handleDeleteStory = (storyId: string) => {
+    setEpics((prev) =>
+      prev.map((epic) => ({
+        ...epic,
+        features: epic.features.map((feature) => ({
+          ...feature,
+          stories: feature.stories.filter((story) => story.id !== storyId),
+        })),
+      }))
+    );
+  };
+
+  const handleUpdateStory = (updatedStory: UserStoryRowData) => {
+    setEpics((prev) =>
+      prev.map((epic) => ({
+        ...epic,
+        features: epic.features.map((feature) => ({
+          ...feature,
+          stories: feature.stories.map((story) =>
+            story.id === updatedStory.id ? updatedStory : story
+          ),
+        })),
+      }))
+    );
   };
 
   return (
@@ -47,7 +74,12 @@ export default function StoriesGrid({ epics }: StoriesGridProps) {
                     />
                     {featureExpanded &&
                       feature.stories.map((story) => (
-                        <UserStoryRow key={story.id} story={story} />
+                        <UserStoryRow
+                          key={story.id}
+                          story={story}
+                          onDelete={handleDeleteStory}
+                          onUpdate={handleUpdateStory}
+                        />
                       ))}
                   </div>
                 );
