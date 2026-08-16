@@ -11,7 +11,7 @@ import StatusBar from "@/components/user-stories/StatusBar";
 import NewStoryModal from "@/components/user-stories/NewStoryModal";
 import { EpicRowData } from "@/types";
 export default function UserStoriesPage() {
-  const [epics, setEpics] = useState([]);
+  const [epics, setEpics] = useState<EpicRowData[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
