@@ -1,6 +1,8 @@
-import ConnectSourceButton from "@/components/knowledge-base/ConnectSourceButton";
+interface PageHeaderProps {
+  onConnectClick?: () => void;
+}
 
-export default function PageHeader() {
+export default function PageHeader({ onConnectClick }: PageHeaderProps) {
   return (
     <div className="bg-surface-container-lowest px-lg py-md flex justify-between items-center border-b border-outline-variant">
       <div>
@@ -9,7 +11,6 @@ export default function PageHeader() {
           Manage and organise your user stories and backlog.
         </p>
       </div>
-      <ConnectSourceButton />
     </div>
   );
 }
