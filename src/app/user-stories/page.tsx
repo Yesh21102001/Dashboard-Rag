@@ -9,6 +9,7 @@ import GridHeaderRow from "@/components/user-stories/GridHeaderRow";
 import StoriesGrid from "@/components/user-stories/StoriesGrid";
 import StatusBar from "@/components/user-stories/StatusBar";
 import NewStoryModal from "@/components/user-stories/NewStoryModal";
+import { EpicRowData } from "@/types";
 export default function UserStoriesPage() {
   const [epics, setEpics] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -50,14 +51,14 @@ export default function UserStoriesPage() {
         });
 
         // Directly create epic with stories
-        const epic: any = {
+        const epic: EpicRowData = {
           id: "epic-1",
           code: "EPIC-AUTH",
           title: "Authentication Rewrite",
           status: "In Progress",
           scope: "System Wide",
           reqMapping: "SRS-AUTH-001",
-          assignee: null,
+          assignee: null as any,
           features: [
             {
               id: "feat-1",
