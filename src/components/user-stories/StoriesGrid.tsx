@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EpicRowData, UserStoryRowData } from "@/types";
 import EpicRow from "./EpicRow";
 import FeatureRow from "./FeatureRow";
@@ -15,6 +15,11 @@ export default function StoriesGrid({ epics: initialEpics }: StoriesGridProps) {
     new Set(initialEpics.flatMap((e) => [e.id, ...e.features.map((f) => f.id)]))
   );
   const [epics, setEpics] = useState<EpicRowData[]>(initialEpics);
+
+  useEffect(() => {
+    setEpics(initialEpics);
+    setExpandedIds(new Set(initialEpics.flatMap((e) => [e.id, ...e.features.map((f) => f.id)])));
+  }, [initialEpics]);
 
   const toggle = (id: string) => {
     setExpandedIds((prev) => {

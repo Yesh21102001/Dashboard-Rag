@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import axiosInstance from "@/lib/axios";
 import Icon from "@/components/ui/Icon";
 import { FileItem } from "@/types";
 
@@ -14,49 +15,57 @@ export default function FileContentViewer({ file }: FileContentViewerProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (file.fileUrl && file.file) {
-      loadFileContent();
-    } else {
-      setHtmlContent("");
-      setIsImage(false);
-    }
+    loadFileContent();
   }, [file]);
 
   const loadFileContent = async () => {
-    if (!file.file) return;
-
     setIsLoading(true);
-    const fileType = file.file.type;
-    const fileName = file.file.name.toLowerCase();
+    const fileName = file.filename.toLowerCase();
+    const fileType = file.icon === "pdf" ? "application/pdf" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
     try {
-      if (fileType.includes("pdf") || fileName.endsWith(".pdf")) {
+      const { data } = await axiosInstance.get(`/files/${file.id}`);
+
+      if (!data.success || !data.file) {
+        throw new Error("File not found");
+      }
+
+      const fileData = data.file;
+      const base64Data = fileData.data;
+      const mimeType = fileData.mimeType;
+
+      if (mimeType.includes("pdf")) {
+        const binaryString = atob(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: "application/pdf" });
+        const fileUrl = URL.createObjectURL(blob);
+        setHtmlContent(fileUrl);
         setIsImage(false);
-        setHtmlContent("");
       } else if (
-        fileType.includes("wordprocessingml") ||
-        fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        mimeType.includes("wordprocessingml") ||
         fileName.endsWith(".docx")
       ) {
-        const buffer = await file.file.arrayBuffer();
+        const binaryString = atob(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
         const mammoth = (await import("mammoth")).default;
-        const result = await mammoth.convertToHtml({ arrayBuffer: buffer });
+        const result = await mammoth.convertToHtml({ arrayBuffer: bytes.buffer });
         setHtmlContent(result.value);
         setIsImage(false);
-      } else if (fileType.startsWith("text/") || fileName.endsWith(".txt")) {
-        const text = await file.file.text();
+      } else if (mimeType.startsWith("text/") || fileName.endsWith(".txt")) {
+        const binaryString = atob(base64Data);
+        const text = decodeURIComponent(escape(binaryString));
         setHtmlContent(`<pre style="white-space: pre-wrap; word-wrap: break-word;">${escapeHtml(text)}</pre>`);
         setIsImage(false);
-      } else if (
-        fileType.includes("spreadsheetml") ||
-        fileName.endsWith(".xlsx") ||
-        fileName.endsWith(".xls")
-      ) {
-        setHtmlContent("");
-        setIsImage(false);
-      } else if (fileType.startsWith("image/")) {
+      } else if (mimeType.startsWith("image/")) {
+        const dataUrl = `data:${mimeType};base64,${base64Data}`;
+        setHtmlContent(dataUrl);
         setIsImage(true);
-        setHtmlContent("");
       } else {
         setHtmlContent("");
         setIsImage(false);
@@ -135,46 +144,40 @@ export default function FileContentViewer({ file }: FileContentViewerProps) {
           </div>
         )}
 
-        {!isLoading && file.fileUrl ? (
+        {!isLoading && htmlContent ? (
           file.icon === "pdf" ? (
             <iframe
-              src={file.fileUrl}
+              src={htmlContent}
               className="w-full h-full rounded-lg border border-outline-variant"
               title={file.filename}
             />
           ) : isImage ? (
             <div className="h-full flex items-center justify-center bg-surface-container rounded-lg border border-outline-variant">
               <img
-                src={file.fileUrl}
+                src={htmlContent}
                 alt={file.filename}
                 className="max-w-full max-h-full rounded-lg"
               />
             </div>
-          ) : htmlContent ? (
+          ) : (
             <div className="h-full overflow-y-auto bg-surface-container rounded-lg border border-outline-variant p-4">
               <div
                 className="prose prose-sm max-w-none text-on-surface"
                 dangerouslySetInnerHTML={{ __html: htmlContent }}
               />
             </div>
-          ) : (
-            <div className="h-full flex items-center justify-center bg-surface-container rounded-lg border border-outline-variant">
-              <div className="text-center">
-                <Icon name="description" className="text-[48px] text-primary mx-auto mb-4" />
-                <p className="font-body-md text-on-surface">{file.filename}</p>
-                <p className="font-body-sm text-on-surface-variant mt-2">
-                  Preview not available for this file type
-                </p>
-              </div>
-            </div>
           )
-        ) : (
-          <div className="bg-surface-container rounded-lg p-md border border-outline-variant">
-            <div className="font-body-md text-on-surface whitespace-pre-wrap">
-              {file.content || "No content available"}
+        ) : !isLoading ? (
+          <div className="h-full flex items-center justify-center bg-surface-container rounded-lg border border-outline-variant">
+            <div className="text-center">
+              <Icon name="description" className="text-[48px] text-primary mx-auto mb-4" />
+              <p className="font-body-md text-on-surface">{file.filename}</p>
+              <p className="font-body-sm text-on-surface-variant mt-2">
+                Preview not available for this file type
+              </p>
             </div>
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* File Metadata Footer */}

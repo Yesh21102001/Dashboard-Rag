@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import axiosInstance from "@/lib/axios";
 import Icon from "@/components/ui/Icon";
 
 interface FileUploadModalProps {
@@ -21,12 +22,30 @@ export default function FileUploadModal({
 
   if (!open) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedFile) {
-      onUpload(selectedFile);
-      setFileName("");
-      setSelectedFile(null);
+      try {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        formData.append("category", "SRS");
+
+        const { data } = await axiosInstance.post("/files/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        if (!data.success) {
+          throw new Error(data.message || "Upload failed");
+        }
+
+        onUpload(selectedFile);
+        setFileName("");
+        setSelectedFile(null);
+      } catch (error) {
+        alert(`Upload failed: ${error}`);
+      }
     }
   };
 

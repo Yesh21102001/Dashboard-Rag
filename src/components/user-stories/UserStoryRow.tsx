@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import axiosInstance from "@/lib/axios";
 import Icon from "@/components/ui/Icon";
 import { STORY_STATUS_OPTIONS, UserStoryRowData } from "@/types";
 import ViewStoryModal from "./ViewStoryModal";
@@ -48,17 +49,49 @@ export default function UserStoryRow({ story, onDelete, onUpdate }: UserStoryRow
     setDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    setDeleteModalOpen(false);
-    if (onDelete) {
-      onDelete(story.id);
+  const handleConfirmDelete = async () => {
+    try {
+      const { data } = await axiosInstance.delete(`/user-stories/${story.id}`);
+
+      if (data.success) {
+        setDeleteModalOpen(false);
+        if (onDelete) {
+          onDelete(story.id);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to delete story:", error);
+      alert("Failed to delete story");
     }
   };
 
-  const handleUpdateStory = (updatedStory: UserStoryRowData) => {
-    setEditModalOpen(false);
-    if (onUpdate) {
-      onUpdate(updatedStory);
+  const handleUpdateStory = async (updatedStory: UserStoryRowData) => {
+    try {
+      const acceptanceCriteriaStr = typeof updatedStory.acceptanceCriteria === 'string'
+        ? updatedStory.acceptanceCriteria
+        : `Given: ${updatedStory.acceptanceCriteria.given}\nWhen: ${updatedStory.acceptanceCriteria.when}\nThen: ${updatedStory.acceptanceCriteria.then}`;
+
+      const { data } = await axiosInstance.put(`/user-stories/${story.id}`, {
+        code: updatedStory.code,
+        title: updatedStory.title,
+        preFlow: updatedStory.preFlow,
+        scopeIn: updatedStory.scopeIn,
+        scopeOut: updatedStory.scopeOut,
+        reqMapping: updatedStory.reqMapping,
+        acceptanceCriteria: acceptanceCriteriaStr,
+        assignee: updatedStory.assignee?.name || "",
+        status: updatedStory.status,
+      });
+
+      if (data.success) {
+        setEditModalOpen(false);
+        if (onUpdate) {
+          onUpdate(updatedStory);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to update story:", error);
+      alert("Failed to update story");
     }
   };
 

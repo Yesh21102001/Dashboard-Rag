@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axiosInstance from "@/lib/axios";
 import AppShell from "@/components/layout/AppShell";
 import Toolbar from "@/components/user-stories/Toolbar";
 import PageHeader from "@/components/user-stories/PageHeader";
@@ -8,50 +9,105 @@ import GridHeaderRow from "@/components/user-stories/GridHeaderRow";
 import StoriesGrid from "@/components/user-stories/StoriesGrid";
 import StatusBar from "@/components/user-stories/StatusBar";
 import NewStoryModal from "@/components/user-stories/NewStoryModal";
-import { userStoriesEpics } from "@/data/userStoriesData";
-
 export default function UserStoriesPage() {
-  const [epics, setEpics] = useState(userStoriesEpics);
+  const [epics, setEpics] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleCreate = (newStory: any) => {
-    setEpics((prev) => {
-      const next = JSON.parse(JSON.stringify(prev));
-      if (next.length === 0) return [
-        {
-          id: `epic-${Date.now()}`,
-          code: "EPIC-NEW",
-          title: "New Epic",
-          status: "New",
-          scope: "",
-          reqMapping: "",
+  useEffect(() => {
+    const loadStories = async () => {
+      await fetchStories();
+    };
+    loadStories();
+  }, []);
+
+  const fetchStories = async () => {
+    try {
+      const { data } = await axiosInstance.get("/user-stories");
+      console.log("Fetched stories:", data.stories);
+
+      if (data.success && data.stories && data.stories.length > 0) {
+        const stories = data.stories.map((s: any) => {
+          const acStr = s.acceptanceCriteria || "";
+          const acLines = acStr.split("\n");
+          const given = acLines.find((l: string) => l.startsWith("Given:"))?.replace("Given:", "").trim() || "";
+          const when = acLines.find((l: string) => l.startsWith("When:"))?.replace("When:", "").trim() || "";
+          const then = acLines.find((l: string) => l.startsWith("Then:"))?.replace("Then:", "").trim() || "";
+
+          return {
+            id: s._id,
+            code: s.code,
+            title: s.title,
+            status: s.status,
+            preFlow: s.preFlow,
+            scopeIn: s.scopeIn,
+            scopeOut: s.scopeOut,
+            acceptanceCriteria: { given, when, then },
+            reqMapping: Array.isArray(s.reqMapping) ? s.reqMapping : [],
+            assignee: s.assignee ? { name: s.assignee, initials: s.assignee.substring(0, 2).toUpperCase() } : undefined,
+            syncedWith: null,
+          };
+        });
+
+        // Directly create epic with stories
+        const epic: any = {
+          id: "epic-1",
+          code: "EPIC-AUTH",
+          title: "Authentication Rewrite",
+          status: "In Progress",
+          scope: "System Wide",
+          reqMapping: "SRS-AUTH-001",
           assignee: null,
           features: [
             {
-              id: `feat-${Date.now()}`,
-              code: "FEAT-NEW",
-              title: "New Feature",
-              status: "New",
-              preFlow: "",
+              id: "feat-1",
+              code: "FEAT-LOGIN",
+              title: "User Stories",
+              status: "In Progress",
+              preFlow: "User interaction",
               scope: "",
-              reqMapping: "",
+              reqMapping: "REQ-G-SSO",
               assignee: null,
-              stories: [newStory],
+              stories,
             },
           ],
-        },
-      ];
+        };
 
-      const firstEpic = next[0];
-      if (!firstEpic.features || firstEpic.features.length === 0) {
-        firstEpic.features = [
-          { id: `feat-${Date.now()}`, code: "FEAT-NEW", title: "New Feature", status: "New", preFlow: "", scope: "", reqMapping: "", assignee: null, stories: [newStory] },
-        ];
+        console.log("✓ Setting epics with stories:", stories.length, "stories");
+        setEpics([epic]);
       } else {
-        firstEpic.features[0].stories.push(newStory);
+        console.log("No stories found");
+        setEpics([]);
       }
-      return next;
-    });
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch stories:", error);
+      setEpics([]);
+      setLoading(false);
+    }
+  };
+
+  const handleCreate = async (newStory: any) => {
+    try {
+      const { data } = await axiosInstance.post("/user-stories", {
+        code: newStory.code,
+        title: newStory.title,
+        preFlow: newStory.preFlow || "N/A",
+        scopeIn: newStory.scopeIn || "",
+        scopeOut: newStory.scopeOut || "",
+        reqMapping: newStory.reqMapping,
+        acceptanceCriteria: newStory.actionAcceptanceCriteria || "",
+        assignee: newStory.assignee?.name || "",
+        status: newStory.status,
+      });
+
+      if (data.success) {
+        await fetchStories();
+      }
+    } catch (error) {
+      console.error("Failed to create story:", error);
+      alert("Failed to create story");
+    }
   };
 
   return (
@@ -66,7 +122,7 @@ export default function UserStoriesPage() {
         </div>
       </div>
 
-      <StatusBar totalRows={142} selected={0} />
+      <StatusBar totalRows={epics[0]?.features[0]?.stories.length || 0} selected={0} />
       <NewStoryModal open={modalOpen} onClose={() => setModalOpen(false)} onCreate={handleCreate} />
     </AppShell>
   );

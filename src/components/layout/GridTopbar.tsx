@@ -1,8 +1,36 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
+import { useAuth } from "@/context/AuthContext";
 
 export default function GridTopbar() {
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [menuOpen]);
+
+  const handleLogout = () => {
+    logout();
+    router.push("/auth/login");
+  };
+
   return (
     <header className="flex justify-between items-center w-full px-md h-12 z-50 bg-surface-container-lowest border-b border-outline-variant shrink-0 transition-colors duration-150 ease-in-out">
       <div className="flex items-center gap-md">
@@ -40,15 +68,32 @@ export default function GridTopbar() {
           RAG Sync Active
         </span>
 
-        <Link href="/profile" className="w-7 h-7 rounded-full bg-surface-variant ml-sm flex items-center justify-center border border-outline-variant overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]">
-          <Image
-            alt="User Profile"
-            className="w-full h-full object-cover"
-            width={28}
-            height={28}
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKlTtlJVoS2Hy8BSWUm4tF4aUbbe7DIrLAJpVPr0TX80mFIKAeVN0SFRT7Etk-ZAPGZW0OC4Jtc9POULA2dS68IAhWb0nd27gSx3HmeQNT-cKcGWWo-pz1bWYmNRZ-3IyRB9FfMgforDUw7D89K5xY03NUzu35wZZNEUrTjU3S5hCMOW-SSB6Q3FvZdEAYmyY5ESGMdeuRF4ZPNtaXQD2ZCEMJlgzzoJ1cihfxGT-khY4_SSML_dNg"
-          />
-        </Link>
+        <div className="relative ml-sm" ref={menuRef}>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="w-7 h-7 rounded-full bg-surface-variant flex items-center justify-center border border-outline-variant overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]"
+          >
+            <div className="w-full h-full flex items-center justify-center bg-primary-container text-on-primary font-bold text-[12px]">
+              {user?.name?.[0]?.toUpperCase() || "U"}
+            </div>
+          </button>
+
+          {menuOpen && (
+            <div className="absolute top-10 right-0 bg-surface-container border border-outline-variant rounded-lg shadow-lg z-50 min-w-[180px]">
+              <div className="px-4 py-2 border-b border-outline-variant">
+                <p className="text-[12px] font-semibold text-on-surface">{user?.name}</p>
+                <p className="text-[11px] text-on-surface-variant">{user?.email}</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-2 text-[12px] text-on-surface hover:bg-surface-variant transition-colors flex items-center gap-2"
+              >
+                <Icon name="logout" className="text-[14px]" />
+                Sign Out
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Knowledge Base Manager",
@@ -34,7 +35,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-background text-on-surface h-screen w-screen overflow-hidden flex flex-row">
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

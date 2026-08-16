@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axiosInstance from "@/lib/axios";
 import AppShell from "@/components/layout/AppShell";
 import PageHeader from "@/components/knowledge-base/PageHeader";
 import FolderTree from "@/components/knowledge-base/FolderTree";
@@ -14,24 +15,38 @@ export default function KnowledgeBasePage() {
   const [files, setFiles] = useState<FileItem[]>(brmsFiles);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
+  useEffect(() => {
+    fetchFiles();
+  }, []);
+
+  const fetchFiles = async () => {
+    try {
+      const { data } = await axiosInstance.get("/files/list?category=SRS");
+      if (data.success && data.files) {
+        const transformedFiles: FileItem[] = data.files.map((file: any) => ({
+          id: file.id,
+          filename: file.filename,
+          icon: file.mimeType.includes("pdf") ? "pdf" : "docx",
+          sourceType: "Cloud Upload",
+          ingestionDate: new Date(file.createdAt).toLocaleString(),
+          syncStatus: file.syncStatus,
+          progress: file.progress,
+          lastAiScan: "Recently",
+        }));
+        setFiles(transformedFiles);
+        if (transformedFiles.length > 0) {
+          setSelectedFileId(transformedFiles[0].id);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch files:", error);
+    }
+  };
+
   const selectedFile = files.find((f) => f.id === selectedFileId);
 
-  const handleFileUpload = (file: File) => {
-    const fileUrl = URL.createObjectURL(file);
-    const newFile: FileItem = {
-      id: `file-${Date.now()}`,
-      filename: file.name,
-      icon: file.type.includes("pdf") ? "pdf" : "docx",
-      sourceType: "Local Upload",
-      ingestionDate: new Date().toLocaleString(),
-      syncStatus: "SYNCED",
-      progress: 100,
-      lastAiScan: "Just now",
-      fileUrl,
-      file,
-    };
-    setFiles((prev) => [...prev, newFile]);
-    setSelectedFileId(newFile.id);
+  const handleFileUpload = async (file: File) => {
+    await fetchFiles();
     setUploadModalOpen(false);
   };
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axiosInstance from "@/lib/axios";
 import AppShell from "@/components/layout/AppShell";
 import PageToolbar from "@/components/test-cases/PageToolbar";
 import TestCasesWorkspace from "@/components/test-cases/TestCasesWorkspace";
@@ -12,24 +13,78 @@ export default function TestCasesPage() {
   const [epics, setEpics] = useState<EpicTreeNode[]>(testCasesTree);
   const [selectedId, setSelectedId] = useState(tc801.id);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleCreateTestCase = (newTestCase: TestCaseNode) => {
-    setEpics((prev) => {
-      const next = JSON.parse(JSON.stringify(prev)) as EpicTreeNode[];
+  useEffect(() => {
+    fetchTestCases();
+  }, []);
 
-      const targetEpic = next[0];
-      const targetFeature = targetEpic?.features?.[0];
-      const targetStory = targetFeature?.userStories?.[0];
+  const fetchTestCases = async () => {
+    try {
+      const { data } = await axiosInstance.get("/test-cases");
 
-      if (!targetStory) {
-        return prev;
+      if (data.success && data.testCases) {
+        const testCases = data.testCases.map((tc: any) => ({
+          id: tc._id,
+          code: tc.code,
+          title: tc.title,
+          description: tc.description,
+          status: tc.status,
+          ragGenUnlocked: true,
+          ragGenReason: "RAG Gen: Unlocked (Manual Entry)",
+          preconditions: tc.preConditions,
+          links: [],
+          steps: (tc.testSteps || []).map((step: any, idx: number) => ({
+            id: `step-${idx}`,
+            order: step.order || idx + 1,
+            action: step.action,
+            expected: step.expected,
+          })),
+        }));
+
+        const epic = testCasesTree[0];
+        const feature = epic?.features?.[0];
+        const story = feature?.userStories?.[0];
+
+        if (story) {
+          story.testCases = testCases;
+          setEpics([{ ...epic, features: [{ ...feature, userStories: [story] }] }]);
+          if (testCases.length > 0) {
+            setSelectedId(testCases[0].id);
+          }
+        }
       }
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch test cases:", error);
+      setLoading(false);
+    }
+  };
 
-      targetStory.testCases = [...targetStory.testCases, newTestCase];
-      return next;
-    });
+  const handleCreateTestCase = async (newTestCase: TestCaseNode) => {
+    try {
+      const { data } = await axiosInstance.post("/test-cases", {
+        code: newTestCase.code,
+        title: newTestCase.title,
+        description: newTestCase.description,
+        status: newTestCase.status,
+        preConditions: newTestCase.preconditions,
+        testSteps: newTestCase.steps.map((step) => ({
+          order: step.order,
+          action: step.action,
+          expected: step.expected,
+        })),
+        expectedResults: newTestCase.steps[0]?.expected || "",
+      });
 
-    setSelectedId(newTestCase.id);
+      if (data.success) {
+        await fetchTestCases();
+        setSelectedId(data.testCase._id);
+      }
+    } catch (error) {
+      console.error("Failed to create test case:", error);
+      alert("Failed to create test case");
+    }
   };
 
   return (

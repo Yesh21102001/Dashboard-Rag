@@ -44,18 +44,26 @@ export default function EpicRow({ epic, expanded, onToggle }: EpicRowProps) {
         {epic.reqMapping}
       </div>
       <div className="w-24 px-3 border-r border-outline-variant h-full self-stretch flex items-center">
-        <div className="flex items-center gap-1.5">
-          <div className="w-5 h-5 rounded-full bg-surface-variant border border-outline-variant overflow-hidden">
-            <Image
-              alt={epic.assignee.name}
-              className="w-full h-full object-cover"
-              width={20}
-              height={20}
-              src={epic.assignee.avatarUrl!}
-            />
+        {epic.assignee ? (
+          <div className="flex items-center gap-1.5">
+            <div className="w-5 h-5 rounded-full bg-surface-variant border border-outline-variant overflow-hidden">
+              {epic.assignee.avatarUrl ? (
+                <Image
+                  alt={epic.assignee.name}
+                  className="w-full h-full object-cover"
+                  width={20}
+                  height={20}
+                  src={epic.assignee.avatarUrl}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-primary text-on-primary text-[8px] font-bold">
+                  {epic.assignee.initials || "?"}
+                </div>
+              )}
+            </div>
+            <span className="text-[12px] truncate">{epic.assignee.name}</span>
           </div>
-          <span className="text-[12px] truncate">{epic.assignee.name}</span>
-        </div>
+        ) : null}
       </div>
       <div className="w-20 px-3 h-full self-stretch flex items-center justify-center">
         <button className="text-on-surface-variant hover:text-primary">
