@@ -9,11 +9,13 @@ import GridHeaderRow from "@/components/user-stories/GridHeaderRow";
 import StoriesGrid from "@/components/user-stories/StoriesGrid";
 import StatusBar from "@/components/user-stories/StatusBar";
 import NewStoryModal from "@/components/user-stories/NewStoryModal";
-import { EpicRowData } from "@/types";
+import HierarchyPanel from "@/components/folders/HierarchyPanel";
+import { EpicRowData, FolderNode } from "@/types";
 export default function UserStoriesPage() {
   const [epics, setEpics] = useState<EpicRowData[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedFolder, setSelectedFolder] = useState<FolderNode | null>(null);
 
   useEffect(() => {
     const loadStories = async () => {
@@ -116,15 +118,31 @@ export default function UserStoriesPage() {
       <PageHeader />
       <Toolbar epicLabel="Epic: Authentication Rewrite" onNewStory={() => setModalOpen(true)} />
 
-      <div className="flex-1 overflow-auto bg-surface-container-lowest relative">
-        <div className="min-w-[1400px] w-full">
-          <GridHeaderRow />
-          <StoriesGrid epics={epics} />
+      <div className="flex flex-1 overflow-hidden gap-4 bg-surface-container-lowest">
+        {/* Folder Sidebar */}
+        <div className="w-80 border-r border-outline bg-surface-container-lowest flex flex-col">
+          <HierarchyPanel
+            moduleType="userStories"
+            onSelectItem={setSelectedFolder}
+          />
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto relative">
+          <div className="min-w-[1400px] w-full">
+            <GridHeaderRow />
+            <StoriesGrid epics={epics} />
+          </div>
         </div>
       </div>
 
       <StatusBar totalRows={epics[0]?.features[0]?.stories.length || 0} selected={0} />
-      <NewStoryModal open={modalOpen} onClose={() => setModalOpen(false)} onCreate={handleCreate} />
+      <NewStoryModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onCreate={handleCreate}
+        selectedFolder={selectedFolder?._id}
+      />
     </AppShell>
   );
 }

@@ -7,11 +7,12 @@ interface NewTestCaseModalProps {
   open: boolean;
   onClose: () => void;
   onCreate: (payload: TestCaseNode) => void;
+  selectedFolder?: string | null;
 }
 
 const DEFAULT_STATUS = "Draft";
 
-export default function NewTestCaseModal({ open, onClose, onCreate }: NewTestCaseModalProps) {
+export default function NewTestCaseModal({ open, onClose, onCreate, selectedFolder }: NewTestCaseModalProps) {
   const [code, setCode] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -19,6 +20,7 @@ export default function NewTestCaseModal({ open, onClose, onCreate }: NewTestCas
   const [expectedResults, setExpectedResults] = useState("");
   const [status, setStatus] = useState(DEFAULT_STATUS);
   const [preconditions, setPreconditions] = useState("");
+  const [folderId, setFolderId] = useState(selectedFolder || "");
 
   if (!open) return null;
 
@@ -30,6 +32,7 @@ export default function NewTestCaseModal({ open, onClose, onCreate }: NewTestCas
     setExpectedResults("");
     setStatus(DEFAULT_STATUS);
     setPreconditions("");
+    setFolderId(selectedFolder || "");
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -56,7 +59,7 @@ export default function NewTestCaseModal({ open, onClose, onCreate }: NewTestCas
       return;
     }
 
-    const newTestCase: TestCaseNode = {
+    const newTestCase: any = {
       id: `tc-${Date.now()}`,
       code: trimmedCode,
       title: trimmedTitle,
@@ -74,6 +77,7 @@ export default function NewTestCaseModal({ open, onClose, onCreate }: NewTestCas
           expected: trimmedExpectedResults,
         },
       ],
+      folderId: folderId || null,
     };
 
     onCreate(newTestCase);
@@ -127,6 +131,17 @@ export default function NewTestCaseModal({ open, onClose, onCreate }: NewTestCas
               <option value="Rejected">Rejected</option>
               <option value="On Hold">On Hold</option>
             </select>
+          </label>
+
+          <label className="flex flex-col gap-1">
+            <span className="font-label-caps text-label-caps text-on-surface-variant">Folder (Optional)</span>
+            <input
+              type="text"
+              value={folderId}
+              onChange={(e) => setFolderId(e.target.value)}
+              placeholder="Folder ID"
+              className="rounded-md border border-outline-variant bg-surface-container px-3 py-2 text-body-sm text-on-surface outline-none focus:border-primary"
+            />
           </label>
 
           <label className="flex flex-col gap-1 md:col-span-2">

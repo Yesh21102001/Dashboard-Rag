@@ -6,14 +6,16 @@ import AppShell from "@/components/layout/AppShell";
 import PageToolbar from "@/components/test-cases/PageToolbar";
 import TestCasesWorkspace from "@/components/test-cases/TestCasesWorkspace";
 import NewTestCaseModal from "@/components/test-cases/NewTestCaseModal";
+import HierarchyPanel from "@/components/folders/HierarchyPanel";
 import { testCasesTree, tc801 } from "@/data/testCasesData";
-import { EpicTreeNode, TestCaseNode } from "@/types";
+import { EpicTreeNode, TestCaseNode, FolderNode } from "@/types";
 
 export default function TestCasesPage() {
   const [epics, setEpics] = useState<EpicTreeNode[]>(testCasesTree);
   const [selectedId, setSelectedId] = useState(tc801.id);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedFolder, setSelectedFolder] = useState<FolderNode | null>(null);
 
   useEffect(() => {
     fetchTestCases();
@@ -90,7 +92,22 @@ export default function TestCasesPage() {
   return (
     <AppShell>
       <PageToolbar workspaceLabel="Payment Gateway RAG" onNewTestCase={() => setModalOpen(true)} />
-      <TestCasesWorkspace epics={epics} selectedId={selectedId} onSelectId={setSelectedId} />
+
+      <div className="flex flex-1 overflow-hidden gap-4 bg-surface-container-lowest">
+        {/* Folder Sidebar */}
+        <div className="w-80 border-r border-outline bg-surface-container-lowest flex flex-col">
+          <HierarchyPanel
+            moduleType="testCases"
+            onSelectItem={setSelectedFolder}
+          />
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 overflow-hidden">
+          <TestCasesWorkspace epics={epics} selectedId={selectedId} onSelectId={setSelectedId} />
+        </div>
+      </div>
+
       <NewTestCaseModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -98,6 +115,7 @@ export default function TestCasesPage() {
           handleCreateTestCase(payload);
           setModalOpen(false);
         }}
+        selectedFolder={selectedFolder?._id}
       />
     </AppShell>
   );

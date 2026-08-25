@@ -6,9 +6,10 @@ interface NewStoryModalProps {
   open: boolean;
   onClose: () => void;
   onCreate: (payload: any) => void;
+  selectedFolder?: string | null;
 }
 
-export default function NewStoryModal({ open, onClose, onCreate }: NewStoryModalProps) {
+export default function NewStoryModal({ open, onClose, onCreate, selectedFolder }: NewStoryModalProps) {
   const [title, setTitle] = useState("");
   const [code, setCode] = useState("");
   const [status, setStatus] = useState("Ready for Review");
@@ -18,6 +19,7 @@ export default function NewStoryModal({ open, onClose, onCreate }: NewStoryModal
   const [reqMapping, setReqMapping] = useState("");
   const [assignee, setAssignee] = useState("");
   const [actionAcceptanceCriteria, setActionAcceptanceCriteria] = useState("");
+  const [folderId, setFolderId] = useState(selectedFolder || "");
 
   if (!open) return null;
 
@@ -36,6 +38,7 @@ export default function NewStoryModal({ open, onClose, onCreate }: NewStoryModal
       assignee: assignee ? { name: assignee } : null,
       actionAcceptanceCriteria,
       syncedWith: null,
+      folderId: folderId || null,
     };
 
     onCreate(newStory);
@@ -49,6 +52,7 @@ export default function NewStoryModal({ open, onClose, onCreate }: NewStoryModal
     setReqMapping("");
     setAssignee("");
     setActionAcceptanceCriteria("");
+    setFolderId(selectedFolder || "");
     onClose();
   };
 
@@ -87,6 +91,30 @@ export default function NewStoryModal({ open, onClose, onCreate }: NewStoryModal
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              className="rounded-md border border-outline-variant bg-surface-container px-3 py-2 text-body-sm text-on-surface outline-none focus:border-primary"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1">
+            <span className="font-label-caps text-label-caps text-on-surface-variant">Status</span>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="rounded-md border border-outline-variant bg-surface-container px-3 py-2 text-body-sm text-on-surface outline-none focus:border-primary"
+            >
+              <option value="In Progress">In Progress</option>
+              <option value="Ready for Review">Ready for Review</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </label>
+
+          <label className="flex flex-col gap-1">
+            <span className="font-label-caps text-label-caps text-on-surface-variant">Folder (Optional)</span>
+            <input
+              type="text"
+              value={folderId}
+              onChange={(e) => setFolderId(e.target.value)}
+              placeholder="Folder ID"
               className="rounded-md border border-outline-variant bg-surface-container px-3 py-2 text-body-sm text-on-surface outline-none focus:border-primary"
             />
           </label>

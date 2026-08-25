@@ -150,3 +150,15 @@ export interface EpicTreeNode {
   title: string;
   features: FeatureTreeNode[];
 }
+
+/* Folder Hierarchy Types */
+
+export interface FolderNode {
+  _id: string;
+  name: string;
+  type: "folder" | "epic" | "feature";
+  parentId: string | null;
+  moduleType: "userStories" | "testCases";
+  description?: string;
+  children?: FolderNode[];
+}
