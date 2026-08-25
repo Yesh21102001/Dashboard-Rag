@@ -33,8 +33,9 @@ export default function HierarchyPanel({ moduleType, onSelectItem }: HierarchyPa
       if (data.success) {
         setHierarchy(data.hierarchy);
       }
-    } catch (error: any) {
-      console.error("Failed to fetch hierarchy:", error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      console.error("Failed to fetch hierarchy:", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -67,9 +68,10 @@ export default function HierarchyPanel({ moduleType, onSelectItem }: HierarchyPa
       console.log("Create response:", response.data);
       await fetchHierarchy();
       setModalOpen(false);
-    } catch (error: any) {
-      console.error("Failed to create item:", error.response?.data || error);
-      alert(`Failed to create item: ${error.response?.data?.message || error.message}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      console.error("Failed to create item:", errorMessage);
+      alert(`Failed to create item: ${errorMessage}`);
     }
   };
 
@@ -81,9 +83,10 @@ export default function HierarchyPanel({ moduleType, onSelectItem }: HierarchyPa
     try {
       await axiosInstance.delete(`/folders/${itemId}`);
       await fetchHierarchy();
-    } catch (error: any) {
-      console.error("Failed to delete item:", error);
-      alert("Failed to delete item");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      console.error("Failed to delete item:", errorMessage);
+      alert(`Failed to delete item: ${errorMessage}`);
     }
   };
 
